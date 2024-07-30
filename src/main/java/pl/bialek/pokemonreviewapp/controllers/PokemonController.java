@@ -1,21 +1,26 @@
 package pl.bialek.pokemonreviewapp.controllers;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import pl.bialek.pokemonreviewapp.dto.PokemonDTO;
-import pl.bialek.pokemonreviewapp.dto.PokemonsResponse;
+import pl.bialek.pokemonreviewapp.dto.PokemonResponse;
+import pl.bialek.pokemonreviewapp.service.PokemonService;
+
 
 @RestController
 @RequestMapping("/api/")
+@RequiredArgsConstructor
 public class PokemonController {
+
+    PokemonService pokemonService;
 
 
     @GetMapping("pokemons")
-    public ResponseEntity<PokemonsResponse> getPokemons(
+    public ResponseEntity<PokemonResponse> getPokemons(
             @RequestParam(value = "pageNumber", defaultValue = "0") int pageNumber,
-            @RequestParam(value = "pageCapacity", defaultValue = 10) int pageCappapageCapacity
+            @RequestParam(value = "pageCapacity", defaultValue = "10") int pageCappapageCapacity
     ){
         return new ResponseEntity<>(pokemonService.getAllPokoemons(pageNumber,pageCappapageCapacity),
                 HttpStatus.OK);
@@ -25,7 +30,7 @@ public class PokemonController {
     public ResponseEntity<PokemonDTO> getPokemon(
             @PathVariable("pokemonId") int pokemonId
     ){
-        return ResponseEntity.ok(pokemonService.getPokemonById(pokemonId);)
+        return ResponseEntity.ok(pokemonService.getPokemonById(pokemonId));
     }
 
     @PutMapping("pokemon/{id}/update")

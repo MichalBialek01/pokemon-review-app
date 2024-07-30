@@ -1,10 +1,14 @@
 package pl.bialek.pokemonreviewapp.dto;
 
-import pl.bialek.pokemonreviewapp.entities.ReviewEntity;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
-import java.util.List;
-
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class PokemonDTO {
     private int id;
     private String name;
