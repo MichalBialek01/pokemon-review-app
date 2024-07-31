@@ -37,12 +37,9 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Override
     public ReviewDTO getReviewById(int pokemonId, int reviewId) {
-        PokemonEntity pokemonEntity = pokemonRepository.findById(pokemonId)
-                .orElseThrow(() -> new PokemonNotFoundException("Pokemon with id: [%s] doesn't exist".formatted(pokemonId)));
+        PokemonEntity pokemonEntity = getPokemonEntity(pokemonId);
 
-        ReviewEntity reviewEntity = reviewRepository.findById(reviewId).orElseThrow(
-                () -> new ReviewNotFoundException("Review with id: [%s] doesn't exist".formatted(reviewId))
-        );
+        ReviewEntity reviewEntity = getReviewEntity(reviewId);
 
         if (reviewEntity.getPokemon().getId() != pokemonEntity.getId()) {
             throw new ReviewNotAssignedToPokemonException(
@@ -61,4 +58,29 @@ public class ReviewServiceImpl implements ReviewService {
         return mapToDTO(savedReview);
     }
 
+    @Override
+    public ReviewDTO updateReview(int pokemonId, int reviewId, ReviewDTO reviewDTO) {
+        PokemonEntity pokemonEntity = getPokemonEntity(pokemonId);
+        ReviewEntity reviewEntity = getReviewEntity(reviewId);
+
+        reviewEntity.setTitle(reviewDTO.getTitle());
+        reviewEntity.setContent(reviewDTO.getContent());
+        reviewEntity.setStars(reviewDTO.getStars());
+
+        reviewRepository.save(reviewEntity);
+
+        return mapToDTO(reviewEntity);
+    }
+
+    private PokemonEntity getPokemonEntity(int pokemonId) {
+        return pokemonRepository.findById(pokemonId)
+                .orElseThrow(() -> new PokemonNotFoundException("Pokemon with id: [%s] doesn't exist".formatted(pokemonId)));
+    }
+
+
+    private ReviewEntity getReviewEntity(int reviewId) {
+        return reviewRepository.findById(reviewId).orElseThrow(
+                () -> new ReviewNotFoundException("Review with id: [%s] doesn't exist".formatted(reviewId))
+        );
+    }
 }
