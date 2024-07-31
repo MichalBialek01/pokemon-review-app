@@ -6,4 +6,6 @@ import java.util.List;
 
 public interface ReviewService {
     List<ReviewDTO> findByPokemonId(int pokemonId);
+
+    ReviewDTO getReviewById(int pokremonId, int reviewId);
 }
