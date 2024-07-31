@@ -1,6 +1,5 @@
 package pl.bialek.pokemonreviewapp.service.impl;
 
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import pl.bialek.pokemonreviewapp.dto.ReviewDTO;
@@ -17,6 +16,7 @@ import pl.bialek.pokemonreviewapp.service.ReviewService;
 import java.util.List;
 
 import static pl.bialek.pokemonreviewapp.mappers.ReviewMapUtil.mapToDTO;
+import static pl.bialek.pokemonreviewapp.mappers.ReviewMapUtil.mapToEntity;
 
 
 @Service
@@ -50,6 +50,15 @@ public class ReviewServiceImpl implements ReviewService {
             );
         }
         return mapToDTO(reviewEntity);
+    }
+
+    @Override
+    public ReviewDTO createReview(int pokemonId, ReviewDTO reviewDTO) {
+
+        pokemonRepository.findById(pokemonId).orElseThrow(
+                ()-> new PokemonNotFoundException("review with id [%s] could not be assigned to pokemon with id [%s], because it doesn't exist".formatted(pokemonId,reviewDTO.getId())));
+        ReviewEntity savedReview = reviewRepository.save(mapToEntity(reviewDTO));
+        return mapToDTO(savedReview);
     }
 
 }

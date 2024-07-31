@@ -8,4 +8,6 @@ public interface ReviewService {
     List<ReviewDTO> findByPokemonId(int pokemonId);
 
     ReviewDTO getReviewById(int pokremonId, int reviewId);
+
+    ReviewDTO createReview(int pokemonId, ReviewDTO reviewDTO);
 }
