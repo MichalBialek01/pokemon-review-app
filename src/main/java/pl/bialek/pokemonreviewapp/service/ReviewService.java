@@ -12,4 +12,6 @@ public interface ReviewService {
     ReviewDTO createReview(int pokemonId, ReviewDTO reviewDTO);
 
     ReviewDTO updateReview(int pokemonId, int reviewId, ReviewDTO reviewDTO);
+
+    void deleteReview(int pokemonId, int reviewId);
 }

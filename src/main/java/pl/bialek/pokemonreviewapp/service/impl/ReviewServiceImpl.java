@@ -52,8 +52,9 @@ public class ReviewServiceImpl implements ReviewService {
     @Override
     public ReviewDTO createReview(int pokemonId, ReviewDTO reviewDTO) {
 
+        
         pokemonRepository.findById(pokemonId).orElseThrow(
-                ()-> new PokemonNotFoundException("review with id [%s] could not be assigned to pokemon with id [%s], because it doesn't exist".formatted(pokemonId,reviewDTO.getId())));
+                ()-> new PokemonNotFoundException("Review with id [%s] could not be assigned to pokemon with id [%s], because it doesn't exist".formatted(pokemonId,reviewDTO.getId())));
         ReviewEntity savedReview = reviewRepository.save(mapToEntity(reviewDTO));
         return mapToDTO(savedReview);
     }
@@ -70,6 +71,18 @@ public class ReviewServiceImpl implements ReviewService {
         reviewRepository.save(reviewEntity);
 
         return mapToDTO(reviewEntity);
+    }
+
+    @Override
+    public void deleteReview(int pokemonId, int reviewId) {
+        PokemonEntity pokemonEntity = getPokemonEntity(reviewId);
+        ReviewEntity reviewEntity = getReviewEntity(reviewId);
+
+        if(reviewEntity.getPokemon().getId() != pokemonEntity.getId()) {
+            throw new ReviewNotFoundException("This review with id [%s] does not belong to provided pokemon with id [%s]".formatted(pokemonId,reviewId));
+        }
+
+        reviewRepository.delete(reviewEntity);
     }
 
     private PokemonEntity getPokemonEntity(int pokemonId) {
