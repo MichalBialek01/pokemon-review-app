@@ -14,7 +14,7 @@ import pl.bialek.pokemonreviewapp.service.PokemonService;
 @RequiredArgsConstructor
 public class PokemonController {
 
-    PokemonService pokemonService;
+    private final PokemonService pokemonService;
 
 
     @GetMapping("pokemons")
