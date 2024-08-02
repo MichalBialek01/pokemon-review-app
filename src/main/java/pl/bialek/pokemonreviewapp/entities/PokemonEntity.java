@@ -13,7 +13,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Entity
+@Entity(name = "pokemon")
 public class PokemonEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
