@@ -1,9 +1,6 @@
 package pl.bialek.pokemonreviewapp.controllers.security;
 
 import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -15,12 +12,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import pl.bialek.pokemonreviewapp.dto.security.AuthResponseDTO;
 import pl.bialek.pokemonreviewapp.dto.security.LoginDTO;
 import pl.bialek.pokemonreviewapp.dto.security.RegisterDTO;
 import pl.bialek.pokemonreviewapp.entities.security.RoleEntity;
 import pl.bialek.pokemonreviewapp.entities.security.UserEntity;
 import pl.bialek.pokemonreviewapp.repository.security.RoleRepository;
 import pl.bialek.pokemonreviewapp.repository.security.UserRepository;
+import pl.bialek.pokemonreviewapp.security.JWTGenerator;
 
 import java.util.Collections;
 
@@ -33,26 +32,29 @@ public class AuthController {
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
+    private JWTGenerator jwtGenerator;
 
 
-    @Autowired
-    public AuthController(AuthenticationManager authenticationManager, UserRepository userRepository,
-                          RoleRepository roleRepository, PasswordEncoder passwordEncoder) {
-        this.authenticationManager = authenticationManager;
-        this.userRepository = userRepository;
-        this.roleRepository = roleRepository;
-        this.passwordEncoder = passwordEncoder;
+    @PostMapping("login")
+    public ResponseEntity<AuthResponseDTO> login(@RequestBody LoginDTO loginDto) {
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        loginDto.getUsername(),
+                        loginDto.getPassword()));
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        String token = jwtGenerator.generateToken(authentication);
+        return new ResponseEntity<>(new AuthResponseDTO(token), HttpStatus.OK);
     }
 
     @PostMapping("register")
-    public ResponseEntity<String> register(@RequestBody RegisterDTO registerDTO) {
-        if (userRepository.existsByUsername(registerDTO.getUsername())) {
+    public ResponseEntity<String> register(@RequestBody RegisterDTO registerDto) {
+        if (userRepository.existsByUsername(registerDto.getUsername())) {
             return new ResponseEntity<>("Username is taken!", HttpStatus.BAD_REQUEST);
         }
 
         UserEntity user = new UserEntity();
-        user.setUsername(registerDTO.getUsername());
-        user.setPassword(passwordEncoder.encode((registerDTO.getPassword())));
+        user.setUsername(registerDto.getUsername());
+        user.setPassword(passwordEncoder.encode((registerDto.getPassword())));
 
         RoleEntity roles = roleRepository.findByName("USER").get();
         user.setRoles(Collections.singletonList(roles));
@@ -60,15 +62,5 @@ public class AuthController {
         userRepository.save(user);
 
         return new ResponseEntity<>("User registered success!", HttpStatus.OK);
-    }
-
-    @PostMapping("login")
-    public ResponseEntity<String> login(@RequestBody LoginDTO loginDto) {
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        loginDto.getUsername(),
-                        loginDto.getPassword()));
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        return new ResponseEntity<>("User signed in", HttpStatus.OK);
     }
 }
