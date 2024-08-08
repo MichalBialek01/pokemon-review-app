@@ -96,10 +96,45 @@ class PokemonRepositoryTest {
         pokemonRepository.save(pokemon);
         PokemonEntity retrievedFromDBPokemon = pokemonRepository.findByType(pokemon.getType()).get();
 
-
         // Then/Assert
         Assertions.assertThat(retrievedFromDBPokemon).isNotNull();
+    }
 
+    @Test
+    @Order(5)
+    public void PokemonRepository_UpdatePokemon_ReturnsPokemon() {
+        // Given/Arrange
+        PokemonEntity pokemonToUpdate = PokemonEntity.builder()
+                .name("pokemonName1")
+                .type("pokemonType1")
+                .build();
+
+        pokemonRepository.save(pokemonToUpdate);
+        PokemonEntity savedPokemon = pokemonRepository.getById(pokemonToUpdate.getId());
+
+        // When/Act
+        savedPokemon.setName("pokemonUpdatedName");
+        savedPokemon.setType("pokemonUpdateType");
+        PokemonEntity updatedPokemon = pokemonRepository.getById(pokemonToUpdate.getId());
+
+        // Then/Assert
+        Assertions.assertThat(updatedPokemon.getName()).isEqualTo("pokemonUpdatedName");
+        Assertions.assertThat(updatedPokemon.getType()).isEqualTo("pokemonUpdateType");
     }
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
