@@ -20,9 +20,9 @@ public class PokemonController {
     @GetMapping("pokemons")
     public ResponseEntity<PokemonResponse> getPokemons(
             @RequestParam(value = "pageNumber", defaultValue = "0") int pageNumber,
-            @RequestParam(value = "pageCapacity", defaultValue = "10") int pageCappapageCapacity
+            @RequestParam(value = "pageCapacity", defaultValue = "10") int pageCapacity
     ){
-        return new ResponseEntity<>(pokemonService.getAllPokoemons(pageNumber,pageCappapageCapacity),
+        return new ResponseEntity<>(pokemonService.getAllPokoemons(pageNumber, pageCapacity),
                 HttpStatus.OK);
     }
 
