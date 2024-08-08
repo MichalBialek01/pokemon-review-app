@@ -1,23 +1,33 @@
 package pl.bialek.pokemonreviewapp.repository;
 
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.test.annotation.DirtiesContext;
 import pl.bialek.pokemonreviewapp.entities.PokemonEntity;
+import pl.bialek.pokemonreviewapp.testConfiguration.CleanupH2DbService;
 
 import java.util.List;
 
+@DirtiesContext (classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @DataJpaTest
 @AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.H2)
 class PokemonRepositoryTest {
+
+
     @Autowired
     private PokemonRepository pokemonRepository;
-
+    private CleanupH2DbService cleanupH2DbService;
+    @AfterEach
+    public void cleanUpDatabase() {
+        cleanupH2DbService.cleanup("PUBLIC");
+    }
     @Test
-    public void PokemonRepository_SaveAll_ReturnSavedPokemon(){
+    public void PokemonRepository_SaveAll_ReturnSavedPokemon() {
         // Given/Arrange
         PokemonEntity testingPokemon = PokemonEntity.builder()
                 .name("PokemonName")
@@ -30,8 +40,9 @@ class PokemonRepositoryTest {
         Assertions.assertThat(savedPokemon).isNotNull();
         Assertions.assertThat(savedPokemon.getId()).isGreaterThan(0);
     }
+
     @Test
-    public void PokemonRepository_GetAll_ReturnInsertedPokemon(){
+    public void PokemonRepository_GetAll_ReturnInsertedPokemon() {
         // Given/Arrange
         PokemonEntity pokemon1 = PokemonEntity.builder()
                 .name("pokemonName1")
@@ -53,6 +64,24 @@ class PokemonRepositoryTest {
         Assertions.assertThat(savedPokemon).isNotNull();
         Assertions.assertThat(savedPokemon.size()).isEqualTo(2);
     }
+
+    @Test
+    public void PokemonRepository_FindById_ReturnsPokemon() {
+        // Given/Arrange
+        PokemonEntity pokemon = PokemonEntity.builder()
+                .name("pokemonName1")
+                .type("pokemonType1")
+                .build();
+
+        // When/Act
+        pokemonRepository.save(pokemon);
+        PokemonEntity retrievedFromDBPokemon = pokemonRepository.findById(pokemon.getId()).get();
+
+
+        // Then/Assert
+        Assertions.assertThat(retrievedFromDBPokemon).isNotNull();
+    }
+
 
 
 }
