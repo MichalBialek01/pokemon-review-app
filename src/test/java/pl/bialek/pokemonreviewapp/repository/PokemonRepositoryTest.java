@@ -2,17 +2,19 @@ package pl.bialek.pokemonreviewapp.repository;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import pl.bialek.pokemonreviewapp.entities.PokemonEntity;
 
 import java.util.List;
-
+// By default DataJpaTest rollback every test by default. DirtiesContext to reload context for every test.
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @DataJpaTest
 @ActiveProfiles("test")
@@ -23,11 +25,6 @@ class PokemonRepositoryTest {
 
     @Autowired
     private PokemonRepository pokemonRepository;
-
-    @AfterEach
-    public void cleanUpDatabase() {
-//        TODO
-    }
 
     @Test
     public void PokemonRepository_SaveAll_ReturnSavedPokemon() {
@@ -85,6 +82,22 @@ class PokemonRepositoryTest {
         Assertions.assertThat(retrievedFromDBPokemon).isNotNull();
         Assertions.assertThat(retrievedFromDBPokemon).isEqualTo(1);
     }
+    @Test
+    public void PokemonRepository_FindByType_ReturnsPokemon() {
+        // Given/Arrange
+        PokemonEntity pokemon = PokemonEntity.builder()
+                .name("pokemonName1")
+                .type("pokemonType1")
+                .build();
 
+        // When/Act
+        pokemonRepository.save(pokemon);
+        PokemonEntity retrievedFromDBPokemon = pokemonRepository.findById(pokemon.getId()).get();
+
+
+        // Then/Assert
+        Assertions.assertThat(retrievedFromDBPokemon).isNotNull();
+
+    }
 
 }
