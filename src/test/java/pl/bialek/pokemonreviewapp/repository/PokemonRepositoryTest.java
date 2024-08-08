@@ -8,24 +8,27 @@ import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
 import pl.bialek.pokemonreviewapp.entities.PokemonEntity;
-import pl.bialek.pokemonreviewapp.testConfiguration.CleanupH2DbService;
 
 import java.util.List;
 
-@DirtiesContext (classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @DataJpaTest
-@AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.H2)
+@ActiveProfiles("test")
 class PokemonRepositoryTest {
+
+
 
 
     @Autowired
     private PokemonRepository pokemonRepository;
-    private CleanupH2DbService cleanupH2DbService;
+
     @AfterEach
     public void cleanUpDatabase() {
-        cleanupH2DbService.cleanup("PUBLIC");
+//        TODO
     }
+
     @Test
     public void PokemonRepository_SaveAll_ReturnSavedPokemon() {
         // Given/Arrange
@@ -80,8 +83,8 @@ class PokemonRepositoryTest {
 
         // Then/Assert
         Assertions.assertThat(retrievedFromDBPokemon).isNotNull();
+        Assertions.assertThat(retrievedFromDBPokemon).isEqualTo(1);
     }
-
 
 
 }
